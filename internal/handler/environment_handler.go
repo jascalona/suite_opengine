@@ -3,7 +3,7 @@ package handler
 import (
 	"log"
 	"net/http"
-	"opengine/v2/internal/domain"
+	"opengine/v2/internal/domain/components"
 	usecase "opengine/v2/internal/usecase/components"
 	"opengine/v2/pkg/utils"
 
@@ -19,7 +19,7 @@ func NewEnvironmentHandler(s usecase.EnvironmentServ) *EnvironmentHandler {
 }
 
 func (h *EnvironmentHandler) CreatedEnvironment(c *gin.Context) {
-	var reqEnvironment domain.ValidationEnvironment
+	var reqEnvironment components.ValidationEnvironment
 
 	if err := c.ShouldBindJSON(&reqEnvironment); err != nil {
 		errors := utils.GetValidationError(err)
@@ -35,7 +35,7 @@ func (h *EnvironmentHandler) CreatedEnvironment(c *gin.Context) {
 		return
 	}
 
-	envi := domain.Environment{
+	envi := components.Environment{
 		Name:          reqEnvironment.Name,
 		GlobalDomain:  reqEnvironment.GlobalDomain,
 		GlobalHeaders: reqEnvironment.GlobalHeaders,

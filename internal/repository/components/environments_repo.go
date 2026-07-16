@@ -6,18 +6,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"opengine/v2/internal/domain"
+	"opengine/v2/internal/domain/components"
 )
 
 type EnvironmentRepo struct {
 	DB *sql.DB
 }
 
-func NewEnvironmentRepo(db *sql.DB) domain.InterfaceEnvironment {
+func NewEnvironmentRepo(db *sql.DB) components.InterfaceEnvironment {
 	return &EnvironmentRepo{DB: db}
 }
 
-func (r *EnvironmentRepo) CreatedEnvironment(ctx context.Context, envi *domain.Environment) error {
+func (r *EnvironmentRepo) CreatedEnvironment(ctx context.Context, envi *components.Environment) error {
 	query := `
         INSERT INTO environments(
             name,
@@ -50,7 +50,7 @@ func (r *EnvironmentRepo) CreatedEnvironment(ctx context.Context, envi *domain.E
 	return nil
 }
 
-func (r *EnvironmentRepo) ListEnvironment(ctx context.Context) ([]*domain.Environment, error) {
+func (r *EnvironmentRepo) ListEnvironment(ctx context.Context) ([]*components.Environment, error) {
 	query := `
         SELECT 
             id,
@@ -68,10 +68,10 @@ func (r *EnvironmentRepo) ListEnvironment(ctx context.Context) ([]*domain.Enviro
 	}
 	defer rows.Close()
 
-	list_envi := make([]*domain.Environment, 0)
+	list_envi := make([]*components.Environment, 0)
 
 	for rows.Next() {
-		lst := &domain.Environment{}
+		lst := &components.Environment{}
 
 		var g_headers []byte
 		var g_auth []byte

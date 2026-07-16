@@ -4,25 +4,25 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"opengine/v2/internal/domain"
+	"opengine/v2/internal/domain/components"
 )
 
 type EnvironmentServ interface {
-	CreatedEnvironment(ctx context.Context, envi *domain.Environment) error
-	ListEnvironment(ctx context.Context) ([]*domain.Environment, error)
+	CreatedEnvironment(ctx context.Context, envi *components.Environment) error
+	ListEnvironment(ctx context.Context) ([]*components.Environment, error)
 }
 
 type EnvironmentImpl struct {
-	Repo domain.InterfaceEnvironment
+	Repo components.InterfaceEnvironment
 }
 
-func NewEnvironmentServ(repo domain.InterfaceEnvironment) EnvironmentServ {
+func NewEnvironmentServ(repo components.InterfaceEnvironment) EnvironmentServ {
 	return &EnvironmentImpl{
 		Repo: repo,
 	}
 }
 
-func (s *EnvironmentImpl) CreatedEnvironment(ctx context.Context, envi *domain.Environment) error {
+func (s *EnvironmentImpl) CreatedEnvironment(ctx context.Context, envi *components.Environment) error {
 
 	err := s.Repo.CreatedEnvironment(ctx, envi)
 	if err != nil {
@@ -33,7 +33,7 @@ func (s *EnvironmentImpl) CreatedEnvironment(ctx context.Context, envi *domain.E
 	return nil
 }
 
-func (s *EnvironmentImpl) ListEnvironment(ctx context.Context) ([]*domain.Environment, error) {
+func (s *EnvironmentImpl) ListEnvironment(ctx context.Context) ([]*components.Environment, error) {
 	envi_list, err := s.Repo.ListEnvironment(ctx)
 	if err != nil {
 		log.Println("No se pudo retornar los registros: ", err.Error())
