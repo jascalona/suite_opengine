@@ -25,8 +25,8 @@ func (s *EnvironmentImpl) CreatedEnvironment(ctx context.Context, envi *domain.E
 
 	err := s.Repo.CreatedEnvironment(ctx, envi)
 	if err != nil {
-		log.Println("Error al pricesar la peticion (created environments): ", err.Error())
-		return fmt.Errorf("Error al pricesar la peticion (created environments): %v", err.Error())
+		log.Println("Error al procesar la peticion (created environments): ", err.Error())
+		return fmt.Errorf("Error al procesar la peticion (created environments): %v", err.Error())
 	}
 
 	return nil
