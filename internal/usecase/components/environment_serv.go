@@ -9,6 +9,7 @@ import (
 
 type EnvironmentServ interface {
 	CreatedEnvironment(ctx context.Context, envi *domain.Environment) error
+	ListEnvironment(ctx context.Context) ([]*domain.Environment, error)
 }
 
 type EnvironmentImpl struct {
@@ -30,4 +31,14 @@ func (s *EnvironmentImpl) CreatedEnvironment(ctx context.Context, envi *domain.E
 	}
 
 	return nil
+}
+
+func (s *EnvironmentImpl) ListEnvironment(ctx context.Context) ([]*domain.Environment, error) {
+	envi_list, err := s.Repo.ListEnvironment(ctx)
+	if err != nil {
+		log.Println("No se pudo retornar los registros: ", err.Error())
+		return nil, fmt.Errorf("Error al procesar la solicitud")
+	}
+
+	return envi_list, nil
 }

@@ -23,5 +23,6 @@ func (r *RouterComponent) RegisterComponents(rg *gin.RouterGroup) {
 	environments := rg.Group("environments")
 	{
 		environments.POST("", r.Envi.CreatedEnvironment)
+		environments.GET("", r.Envi.ListEnvironment)
 	}
 }

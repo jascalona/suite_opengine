@@ -35,15 +35,11 @@ func (h *EnvironmentHandler) CreatedEnvironment(c *gin.Context) {
 		return
 	}
 
-	// validacion para los campos de tipo jsonb
-	global_h := reqEnvironment.GlobalHeaders
-	global_a := reqEnvironment.GlobalAuth
-
 	envi := domain.Environment{
 		Name:          reqEnvironment.Name,
 		GlobalDomain:  reqEnvironment.GlobalDomain,
-		GlobalHeaders: global_h,
-		GlobalAuth:    global_a,
+		GlobalHeaders: reqEnvironment.GlobalHeaders,
+		GlobalAuth:    reqEnvironment.GlobalAuth,
 	}
 
 	if err := h.Services.CreatedEnvironment(c.Request.Context(), &envi); err != nil {
@@ -54,4 +50,14 @@ func (h *EnvironmentHandler) CreatedEnvironment(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, "Solicitud procesada con exito")
 
+}
+
+func (h *EnvironmentHandler) ListEnvironment(c *gin.Context) {
+
+	envi, err := h.Services.ListEnvironment(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"Error interno": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, envi)
 }
