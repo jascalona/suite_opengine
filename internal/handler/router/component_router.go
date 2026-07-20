@@ -11,6 +11,7 @@ type RouterComponent struct {
 	Serv   *handler.ServicesHandler
 	Resour *handler.ResourcesHandler
 	SubR   *handler.SubResourcesHandler
+	Endp   *handler.EndpointsHandler
 }
 
 func NewRouterComponent(
@@ -18,12 +19,14 @@ func NewRouterComponent(
 	serv *handler.ServicesHandler,
 	resour *handler.ResourcesHandler,
 	subR *handler.SubResourcesHandler,
+	endp *handler.EndpointsHandler,
 ) *RouterComponent {
 	return &RouterComponent{
 		Envi:   envi,
 		Serv:   serv,
 		Resour: resour,
 		SubR:   subR,
+		Endp:   endp,
 	}
 }
 
@@ -52,5 +55,10 @@ func (r *RouterComponent) RegisterComponents(rg *gin.RouterGroup) {
 		subresources.POST("", r.SubR.CreatedSubResources)
 		subresources.GET("", r.SubR.SubResourcesByResources)
 
+	}
+
+	endpoints := rg.Group("endpoints")
+	{
+		endpoints.POST("", r.Endp.CreatedEndpoints)
 	}
 }
