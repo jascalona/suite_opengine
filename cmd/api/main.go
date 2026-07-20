@@ -38,6 +38,7 @@ func main() {
 	environments_repo := compRepo.NewEnvironmentRepo(dbConn)
 	services_repo := compRepo.NewServicesRepo(dbConn)
 	resources_repo := compRepo.NewRosourcesRepo(dbConn)
+	subresources_repo := compRepo.NewSubResourcesRepo(dbConn)
 
 	// =========================================================================
 	// INYECCIÓN DE DEPENDENCIAS (CAPA NEGOCIO -> SERVICIOS)
@@ -48,6 +49,7 @@ func main() {
 	environments_serv := compServ.NewEnvironmentServ(environments_repo)
 	services_serv := compServ.NewServicesServ(services_repo)
 	resources_serv := compServ.NewRosourcesServ(resources_repo)
+	subresources_serv := compServ.NewSubResourcesServ(subresources_repo)
 
 	// Servicio de Autenticación (Login/JWT)
 	// Obtenemos la llave secreta desde el .env
@@ -67,6 +69,7 @@ func main() {
 	environments_handler := handler.NewEnvironmentHandler(environments_serv)
 	services_handler := handler.NewServicesHandler(services_serv)
 	resources_handler := handler.NewRosourcesHandler(resources_serv)
+	subresources_handler := handler.NewSubResourcesHandler(subresources_serv)
 
 	organizarionRouter := router.NewRouterOrganization(
 		user_handler,
@@ -76,6 +79,7 @@ func main() {
 		environments_handler,
 		services_handler,
 		resources_handler,
+		subresources_handler,
 	)
 
 	apiRouters := router.MainRouter{
