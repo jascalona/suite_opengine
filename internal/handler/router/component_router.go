@@ -68,5 +68,6 @@ func (r *RouterComponent) RegisterComponents(rg *gin.RouterGroup) {
 	accounts := rg.Group("accounts")
 	{
 		accounts.POST("", r.Acco.CreatedAccount)
+		accounts.GET("", r.Acco.ListAccount)
 	}
 }

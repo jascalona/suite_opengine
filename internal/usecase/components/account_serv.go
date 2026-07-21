@@ -11,6 +11,7 @@ import (
 
 type AccountServ interface {
 	CreatedAccount(ctx context.Context, account *components.Account) error
+	ListAccount(ctx context.Context) ([]*components.Account, error)
 }
 
 type AccountImpl struct {
@@ -49,4 +50,15 @@ func (s *AccountImpl) CreatedAccount(ctx context.Context, account *components.Ac
 		return fmt.Errorf("Error al procesar la peticion: %v", "Revice la trazabilidad de la misma")
 	}
 	return nil
+}
+
+func (s *AccountImpl) ListAccount(ctx context.Context) ([]*components.Account, error) {
+
+	account_lis, err := s.Repo.ListAccount(ctx)
+	if err != nil {
+		log.Println("Error al procesar la peticion: ", err.Error())
+		return nil, fmt.Errorf("Error al procesar la peticion %v", "Revice la trazabilidad de la misma")
+	}
+
+	return account_lis, nil
 }

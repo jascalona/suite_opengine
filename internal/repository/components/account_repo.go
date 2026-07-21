@@ -51,3 +51,60 @@ func (r *AccountRepo) CreatedAccount(ctx context.Context, account *components.Ac
 
 	return nil
 }
+
+func (r *AccountRepo) ListAccount(ctx context.Context) ([]*components.Account, error) {
+	query := `
+		SELECT
+			id,
+			environments_id,
+			account_origin,
+			name,
+			document_id,
+			agent,
+			cnta,
+			cele,
+			is_active,
+			collector,
+			contract,
+			created_at
+		FROM account_list ORDER BY created_at DESC`
+
+	rows, err := r.DB.QueryContext(ctx, query)
+
+	if err != nil {
+		log.Println("Error al correr el query: ", err.Error())
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	account_list := make([]*components.Account, 0)
+
+	for rows.Next() {
+		ls := &components.Account{}
+		err := rows.Scan(
+			&ls.Id,
+			&ls.EnvironmentId,
+			&ls.AccountOrigin,
+			&ls.Name,
+			&ls.DocumentsId,
+			&ls.Agent,
+			&ls.Cnta,
+			&ls.Cele,
+			&ls.IsActive,
+			&ls.Collector,
+			&ls.Contract,
+			&ls.CreatedAt,
+		)
+
+		if err != nil {
+			log.Println("Error al aplicar el scanner", err.Error())
+			return nil, err
+		}
+
+		account_list = append(account_list, ls)
+	}
+
+	return account_list, nil
+
+}

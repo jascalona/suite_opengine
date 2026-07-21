@@ -64,3 +64,12 @@ func (h *AccountHandler) CreatedAccount(c *gin.Context) {
 	c.JSON(http.StatusCreated, "Solicitud procesada con exito")
 
 }
+
+func (h *AccountHandler) ListAccount(c *gin.Context) {
+	account_list, err := h.Service.ListAccount(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"Error interno:": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, account_list)
+}

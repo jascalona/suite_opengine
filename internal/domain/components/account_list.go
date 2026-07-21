@@ -36,4 +36,5 @@ type ValidationAccount struct {
 
 type InterfaceAccount interface {
 	CreatedAccount(ctx context.Context, account *Account) error
+	ListAccount(ctx context.Context) ([]*Account, error)
 }
