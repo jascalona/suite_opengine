@@ -10,7 +10,7 @@ import (
 // Definicion de estructura de respuestas (errores de validacion)
 
 type ApiError struct {
-	Field   string `json:"fielt"`
+	Field   string `json:"field"`
 	Message string `json:"message"`
 }
 
@@ -35,9 +35,13 @@ func msgForTag(fe validator.FieldError) string {
 	case "required":
 		return "Este campo es obligatorio"
 	case "max":
-		return fmt.Sprintf("El valor excede el maximo permitido (%s)", fe.Param())
+		return fmt.Sprintf("El valor excede el máximo permitido (%s)", fe.Param())
 	case "min":
-		return fmt.Sprintf("El valor es inferior a la longitud permitida (minio %s)", fe.Param())
+		return fmt.Sprintf("El valor es inferior a la longitud permitida (mínimo %s)", fe.Param())
+	case "numeric":
+		return "Este campo solo debe contener números"
+	case "len":
+		return fmt.Sprintf("Este campo debe tener exactamente %s caracteres", fe.Param())
 	}
-	return "Valor invalido"
+	return "Valor inválido"
 }
