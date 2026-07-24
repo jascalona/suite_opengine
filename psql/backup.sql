@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict XI9HrmjhQ3VdUd6bLwR26AjJJMzMcLCDT7OtM2JWrOoVvK6Yhi8oaNRrWNbg6ye
+\restrict 2NKRIaHqQyfb0LjH0tehzm04VPee959JliZ4ly7famjhygvWRDy4wF70tytePvA
 
 -- Dumped from database version 17.10
 -- Dumped by pg_dump version 17.10
@@ -82,11 +82,18 @@ CREATE TABLE public.endpoints_manager (
     path text,
     method character varying(10),
     default_headers jsonb,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+    request_body jsonb
 );
 
 
 ALTER TABLE public.endpoints_manager OWNER TO postgres;
+
+--
+-- Name: COLUMN endpoints_manager.request_body; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.endpoints_manager.request_body IS 'Plantilla JSON base del contrato del servicio con marcadores {{variable}}';
+
 
 --
 -- Name: endpoints_manager_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -307,17 +314,27 @@ CREATE TABLE public.test_case (
 ALTER TABLE public.test_case OWNER TO postgres;
 
 --
+-- Name: COLUMN test_case.request_body; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.test_case.request_body IS 'Mapa clave-valor con las variables/deltas a inyectar en la plantilla base';
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.users (
     id character varying(15) NOT NULL,
-    name character varying(225) NOT NULL,
-    surname character varying(225) NOT NULL,
+    alias character varying(100) NOT NULL,
+    name character varying(100) NOT NULL,
+    surname character varying(100) NOT NULL,
     email character varying(225) NOT NULL,
+    phone character varying(11),
     password_hash text,
     departament_id integer,
     role_id integer,
+    is_active boolean,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -329,6 +346,10 @@ ALTER TABLE public.users OWNER TO postgres;
 --
 
 COPY public.account_list (id, environments_id, account_origin, name, document_id, agent, cnta, cele, is_active, collector, contract, created_at) FROM stdin;
+b2195cd1-f491-417a-82ab-b4eb62793bc4	16	Bancamiga	QA Juridico Bancamiga	J410035552	0172	01720106961064006008	04129854529	t	t	\N	2026-07-21 15:10:56.641565
+69f41807-6158-4fdb-bb77-4ab7c3ae38b3	16	Bancamiga	QA Juridico Bancamiga	Z410035552	0172	01720106961064006008	04129854529	t	t	\N	2026-07-21 15:11:17.071946
+0ecf6358-295f-4516-a9fe-d267fddaa635	16	Bancamiga	QA Juridico Bancamiga	Z410035552	0172	01720106961064006008	04129854529	t	t	\N	2026-07-21 15:33:00.32392
+363ead31-54c8-407c-80f8-44aabce83c1c	16	Bancamiga	QA Juridico Bancamiga	J410035552	0172	01720106961064006008	04129854529	t	t	\N	2026-07-21 16:05:27.386943
 \.
 
 
@@ -337,6 +358,7 @@ COPY public.account_list (id, environments_id, account_origin, name, document_id
 --
 
 COPY public.departament (id, name, created_at) FROM stdin;
+1	QA	2026-07-16 09:54:24.849773
 \.
 
 
@@ -344,7 +366,8 @@ COPY public.departament (id, name, created_at) FROM stdin;
 -- Data for Name: endpoints_manager; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.endpoints_manager (id, subresource_id, path, method, default_headers, created_at) FROM stdin;
+COPY public.endpoints_manager (id, subresource_id, path, method, default_headers, request_body) FROM stdin;
+4	5	api/v1/transaction/credit	POST	{"Content-Type": "application/json", "X-Service-Source": "Opengine-Core"}	\N
 \.
 
 
@@ -353,6 +376,7 @@ COPY public.endpoints_manager (id, subresource_id, path, method, default_headers
 --
 
 COPY public.environments (id, name, global_domain, global_headers, global_auth, created_at) FROM stdin;
+16	Certificación Sycloud	https://pruebas.app.sypago.net/	{"Accept": "application/json", "Content-Type": "application/json", "X-Client-Type": "Sycloud"}	{"token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJmZXpQcl9HSWhIZ05jOVc1cU5Td2FIQXBRMVRqeUlqbWtpY0d5V1hHUjFzIn0.eyJleHAiOjE4NzA5NTk1ODgsImlhdCI6MTc4NDU1OTU4OCwianRpIjoiN2JlNDMxNWEtNTg1Ny00Y2Y0LWJiZTktOWM5ZjcxMGI0MjJlIiwiaXNzIjoiaHR0cHM6Ly9wcnVlYmFzLnN5cGFnby5uZXQ6ODA4MS9yZWFsbXMvc3lwYWdvIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjVlZmVjMmE2LTc2YjAtNGU3OC1iN2Q3LTYzNzAwYWIyNDA3ZCIsInR5cCI6IkJlYXJlciIsImF6cCI6InN5cGFnb19hcGlrZXlfYWRtaW4iLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIi8qIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLXN5cGFnbyIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9mZmxpbmVfYWNjZXNzIHN5YXBwX3Njb3BlIHByb2ZpbGUgZW1haWwgc3lwYWdvX2FwaV9rZXlfc2NvcGU6NzA2NmNmNmYtNWY2Zi00ZDUxLTg0ZjMtMjY4NDAyOWI0ZjNhLlVzZXIiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImNsaWVudEhvc3QiOiIxMC4xMDAuMy4xIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LXN5cGFnb19hcGlrZXlfYWRtaW4iLCJjbGllbnRBZGRyZXNzIjoiMTAuMTAwLjMuMSIsImNsaWVudF9pZCI6InN5cGFnb19hcGlrZXlfYWRtaW4ifQ.FbS4QzcP62WIy2fhe_uEqT4IhPefOEL3vXZcCZ5MRXJeAykOLrj9hz3odUvJ2hcHNEeI94yUIAu7plOZQickDrZCMMRe08RapTrV985uvXfAsBG0hQE62pKsAXq0Ko_z40ItuOJsjsLDjHIFn6jhaag1oUQgnTFJBICYvGfu1NyzTl0ZF5nTlKXXpCEjJKVnyDVCnsJoGyhHfehWWYpnHb0zWmJiXGXB7etvtrlJrNLT8ft9zyl6yBmZmTVFbTh7Ts8Q4OhYdDBXukL5kmPoN28lGQuX9snd5kbLeJYoHbOkJSwmaS7hupOw2JxNEnyjG_l07NrPQR4rsQxtqg70NA", "auth_type": "bearer"}	2026-07-20 15:00:38.31512
 \.
 
 
@@ -369,6 +393,7 @@ COPY public.permissions (id, name, module, description, created_at) FROM stdin;
 --
 
 COPY public.resources (id, service_id, environment_id, name, created_at) FROM stdin;
+4	8	16	Sycloud	2026-07-20 15:55:19.341491
 \.
 
 
@@ -385,6 +410,9 @@ COPY public.role_permissions (role_id, permissions_id, created_at) FROM stdin;
 --
 
 COPY public.roles (id, name, created_at) FROM stdin;
+1	administrator	2026-07-16 09:55:37.640849
+2	read	2026-07-16 09:55:37.640849
+3	QA	2026-07-16 09:55:37.640849
 \.
 
 
@@ -393,6 +421,7 @@ COPY public.roles (id, name, created_at) FROM stdin;
 --
 
 COPY public.services (id, name, created_at) FROM stdin;
+8	Sypago	2026-07-20 14:58:15.391185
 \.
 
 
@@ -401,6 +430,8 @@ COPY public.services (id, name, created_at) FROM stdin;
 --
 
 COPY public.subresources (id, resource_id, name, cod_sub_product, description, created_at) FROM stdin;
+5	4	Credito 220	220	Sub producto de Credito Inmediato	2026-07-20 16:46:40.154968
+7	4	Debito 002	002	Sub producto de Debito Inmediato OTP	2026-07-20 18:30:41.704994
 \.
 
 
@@ -416,7 +447,8 @@ COPY public.test_case (id, endpoint_id, name, request_body, custom_headers, expe
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, name, surname, email, password_hash, departament_id, role_id, created_at) FROM stdin;
+COPY public.users (id, alias, name, surname, email, phone, password_hash, departament_id, role_id, is_active, created_at) FROM stdin;
+V123456789	batman	batman	destroy	batman@gmail.com	04121234456	$2a$10$ji7i55Bw.gCLaBI0AQdpjOwwvQy/067U88AjHnCpsYzaI4GWKmcwa	1	1	t	2026-07-16 14:08:32.880641
 \.
 
 
@@ -424,21 +456,21 @@ COPY public.users (id, name, surname, email, password_hash, departament_id, role
 -- Name: departament_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.departament_id_seq', 1, false);
+SELECT pg_catalog.setval('public.departament_id_seq', 1, true);
 
 
 --
 -- Name: endpoints_manager_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.endpoints_manager_id_seq', 1, false);
+SELECT pg_catalog.setval('public.endpoints_manager_id_seq', 4, true);
 
 
 --
 -- Name: environments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.environments_id_seq', 1, false);
+SELECT pg_catalog.setval('public.environments_id_seq', 16, true);
 
 
 --
@@ -452,28 +484,28 @@ SELECT pg_catalog.setval('public.permissions_id_seq', 1, false);
 -- Name: resources_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.resources_id_seq', 1, false);
+SELECT pg_catalog.setval('public.resources_id_seq', 4, true);
 
 
 --
 -- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.roles_id_seq', 1, false);
+SELECT pg_catalog.setval('public.roles_id_seq', 3, true);
 
 
 --
 -- Name: services_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.services_id_seq', 1, false);
+SELECT pg_catalog.setval('public.services_id_seq', 8, true);
 
 
 --
 -- Name: subresources_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.subresources_id_seq', 1, false);
+SELECT pg_catalog.setval('public.subresources_id_seq', 7, true);
 
 
 --
@@ -522,6 +554,14 @@ ALTER TABLE ONLY public.environments
 
 ALTER TABLE ONLY public.environments
     ADD CONSTRAINT environments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: resources fk_name_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.resources
+    ADD CONSTRAINT fk_name_unique UNIQUE (name);
 
 
 --
@@ -581,6 +621,14 @@ ALTER TABLE ONLY public.test_case
 
 
 --
+-- Name: services unique_service_name; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.services
+    ADD CONSTRAINT unique_service_name UNIQUE (name);
+
+
+--
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -597,11 +645,11 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users fk_departaments; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: users fk_departament; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT fk_departaments FOREIGN KEY (departament_id) REFERENCES public.departament(id) ON UPDATE CASCADE;
+    ADD CONSTRAINT fk_departament FOREIGN KEY (departament_id) REFERENCES public.departament(id) ON UPDATE CASCADE;
 
 
 --
@@ -680,5 +728,5 @@ ALTER TABLE ONLY public.endpoints_manager
 -- PostgreSQL database dump complete
 --
 
-\unrestrict XI9HrmjhQ3VdUd6bLwR26AjJJMzMcLCDT7OtM2JWrOoVvK6Yhi8oaNRrWNbg6ye
+\unrestrict 2NKRIaHqQyfb0LjH0tehzm04VPee959JliZ4ly7famjhygvWRDy4wF70tytePvA
 

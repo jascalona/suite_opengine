@@ -30,7 +30,7 @@ func (h *EndpointsHandler) CreatedEndpoints(c *gin.Context) {
 			return
 		}
 
-		log.Println("Error: json mal formado: ", err)
+		log.Println("Error: json mal formado papu: ", err)
 		c.JSON(http.StatusBadRequest, errors)
 		return
 	}
@@ -40,6 +40,7 @@ func (h *EndpointsHandler) CreatedEndpoints(c *gin.Context) {
 		Path:           reqEndp.Path,
 		Method:         reqEndp.Method,
 		DefaultHeaders: reqEndp.DefaultHeaders,
+		RequestBody:    reqEndp.RequestBody,
 	}
 
 	if err := h.Service.CreatedEndpoints(c.Request.Context(), &endpoints); err != nil {

@@ -37,3 +37,18 @@ opengine/
 │   └── backup.sql                  # backup
 
 ```
+
+
+## Motor de Payloads Dinámicos
+
+```
+[endpoints_manager.request_body] (Plantilla Base con {{placeholders}})
+                 +
+[test_cases.request_body]        (Mapa Key-Value de Variables)
+                 +
+[Variables de Sistema]           (Fechas dinámicas, TraceIDs, etc.)
+                 │
+                 ▼ (Inyección en Memoria con strings.Replacer en Go)
+                 │
+      [Payload JSON Consolidado] ──► (HTTP Request a la API Externa)
+```
